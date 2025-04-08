@@ -4,10 +4,10 @@
 
 ## 使い方
 
-Node.jsのバージョンは16以上を使用すること。
+Node.jsのバージョンは20以上を使用すること。
 
 ```
-npx txc
+npx tsc
 ```
 
 でビルド。Macは実行権限をつける。 `chmod 755 build/index.js`
@@ -17,7 +17,11 @@ npx txc
 ```
 code $env:AppData\Claude\claude_desktop_config.json
 ```
-で設定ファイルを開く。
+で設定ファイルを開く。Macは、
+
+```
+code ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
 
 以下のように設定。
 
@@ -34,13 +38,31 @@ code $env:AppData\Claude\claude_desktop_config.json
 }
 ```
 
+Macでは、
+
+```
+{
+  "mcpServers": {
+      "get-subjects": {
+          "command": "node",
+          "args": [
+              "/Users/sifue/workspace/zen-syllabus-mcp/build/index.js"
+          ]
+      }
+  }
+}
+```
+
+パスはこのコードを展開した場所に合わせて変更すること。
+
 設定後はClaude Desktopを再起動。
 
 「ZEN大学のシラバスMCPを利用して、フロントエンドエンジニアになるためのオススメの科目をあげてください」
 
 で検証。
 
-![Claude Desktop](image/claude.png)
+![Claude Desktopのスクショ1](image/claude1.png)
+![Claude Desktopのスクショ2](image/claude2.png)
 
 ## VSCodeの設定
 【未検証】いずれGitHub Copilot でAIエージェントが利用できるようなると利用できるらしい(現在はプレビュー版のみ)。
@@ -63,9 +85,10 @@ mcpで設定を検索して以下をsetting.jsonに設定。パスは適宜変�
 
 「ZEN大学のシラバスMCPを利用して、フロントエンドエンジニアになるためのオススメの科目をあげてください」
 
-で検証。東京の天気は調べられないので要注意。
+で検証。
 
 ## 動作確認
+
 詳しくは、[TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)のClientの実装を参照。
 
 ```
@@ -80,9 +103,9 @@ node .\build\client.js
 
 クライアントは検証したいコードに合わせて書き換え、その後、
 ```
-npx txc
+npx tsc
 ```
-でビルドして再度クライアントを実行する
+でビルドして再度クライアントを実行する。
 
 
 ## 参考
