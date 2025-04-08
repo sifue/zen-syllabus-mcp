@@ -75,10 +75,49 @@ async function fetchAllPages(options) {
 //   console.log('=== With Query Params ===');
 //   console.log(JSON.stringify(mergedDataWithQuery, null, 2));
 // })();
+// Get List of All Subjects tool
+server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (code, name, description, thumbnailUrl, openingYear).", {}, async () => {
+    try {
+        const result = await fetchAllPages();
+        // Extract only the required properties from each subject
+        const simplifiedSubjects = result.subjects.map(subject => ({
+            // code: subject.code,
+            name: subject.name,
+            // description: subject.description,
+            // thumbnailUrl: subject.thumbnailUrl,
+            openingYear: subject.openingYear,
+            metadata: {
+                enrollmentGrade: subject.metadata.enrollmentGrade,
+                teachingMethod: subject.metadata.teachingMethod,
+                subjectRequirement: subject.metadata.subjectRequirement,
+                credit: subject.metadata.credit,
+                quarters: subject.metadata.quarters
+            }
+        }));
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: JSON.stringify(simplifiedSubjects, null, 2),
+                },
+            ],
+        };
+    }
+    catch (error) {
+        return {
+            content: [
+                {
+                    type: "text",
+                    text: `Error: ${error}`,
+                },
+            ],
+        };
+    }
+});
 // Get Subjects tools
-server.tool("get-subjects", "Retrieve the course information from the ZEN University syllabus. If neither the numeric expected year of enrollment (enrollment_grade) nor the freeword search parameter (freeword) is specified, all course information will be retrieved.", {
-    enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)").optional(),
-    freeword: z.string().describe("the freeword search parameter (e.g. 'ITリテラシー')").optional(),
+server.tool("get-subjects-with-detail", "Retrieve the course detail information from the ZEN University syllabus. If neither the numeric expected year of enrollment (enrollment_grade) nor the freeword search parameter (freeword) is specified, all course information will be retrieved.", {
+    enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)"),
+    freeword: z.string().describe("the freeword search parameter (e.g. 'ITリテラシー')"),
 }, async ({ enrollment_grade, freeword }) => {
     try {
         const options = {};
@@ -112,7 +151,7 @@ server.tool("get-subjects", "Retrieve the course information from the ZEN Univer
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("Weather MCP Server running on stdio");
+    console.error("ZEN University Syllabus MCP Server running on stdio");
 }
 main().catch((error) => {
     console.error("Fatal error in main():", error);

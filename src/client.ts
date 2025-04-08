@@ -15,13 +15,22 @@ const client = new Client(
 
 await client.connect(transport);
 
-// Call a tool
-const result = await client.callTool({
-  name: "get-subjects",
-  arguments: {
-    enrollment_grade: 1,
-    freeword: "ITリテラシー"
-  }
+// Call get-list-of-all-subjects tool
+const result1 = await client.callTool({
+  name: "get-list-of-all-subjects",
+  arguments: {}
 });
 
-console.log("Result:", result);
+console.log("Result from get-list-of-all-subjects:", result1);
+
+
+// // Call get-subjects tool
+// const result2 = await client.callTool({
+//   name: "get-subjects-with-detail",
+//   arguments: {
+//     enrollment_grade: 1,
+//     freeword: "ITリテラシー"
+//   }
+// });
+
+// console.log("Result from get-subjects-with-detail:", result2);
