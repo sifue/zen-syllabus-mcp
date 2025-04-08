@@ -76,7 +76,7 @@ async function fetchAllPages(options) {
 //   console.log(JSON.stringify(mergedDataWithQuery, null, 2));
 // })();
 // Get List of All Subjects tool
-server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (code, name, description, thumbnailUrl, openingYear).", {}, async () => {
+server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, openingYear, enrollmentGrade, teachingMethod, subjectRequirement, quarters).", {}, async () => {
     try {
         const result = await fetchAllPages();
         // Extract only the required properties from each subject
@@ -114,8 +114,8 @@ server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all cours
         };
     }
 });
-// Get Subjects tools
-server.tool("get-subjects-with-detail", "Retrieve the course detail information from the ZEN University syllabus. If neither the numeric expected year of enrollment (enrollment_grade) nor the freeword search parameter (freeword) is specified, all course information will be retrieved.", {
+// Get Subjects with details tools
+server.tool("get-subjects-with-detail", "Retrieve detailed course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.", {
     enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)"),
     freeword: z.string().describe("the freeword search parameter (e.g. 'ITリテラシー')"),
 }, async ({ enrollment_grade, freeword }) => {

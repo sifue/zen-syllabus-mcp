@@ -23,14 +23,13 @@ const result1 = await client.callTool({
 
 console.log("Result from get-list-of-all-subjects:", result1);
 
+// Call get-subjects tool
+const result2 = await client.callTool({
+  name: "get-subjects-with-detail",
+  arguments: {
+    enrollment_grade: 1,
+    freeword: "ITリテラシー"
+  }
+});
 
-// // Call get-subjects tool
-// const result2 = await client.callTool({
-//   name: "get-subjects-with-detail",
-//   arguments: {
-//     enrollment_grade: 1,
-//     freeword: "ITリテラシー"
-//   }
-// });
-
-// console.log("Result from get-subjects-with-detail:", result2);
+console.log("Result from get-subjects-with-detail:", result2);
