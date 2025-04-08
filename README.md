@@ -9,7 +9,7 @@ Node.jsのバージョンは20以上を使用すること。
 このリポジトリをクローンするか、ZIPでダウンロードして展開する。
 コンソールで開き、以下のコマンドを実行する。
 
-```
+```sh
 npx tsc
 ```
 
@@ -20,18 +20,18 @@ npx tsc
 [Claude Desktop](https://claude.ai/download)をインストールする。
 [VSCode](https://azure.microsoft.com/ja-jp/products/visual-studio-code)のエディタがインストール前提だが、
 
-```
+```sh
 code $env:AppData\Claude\claude_desktop_config.json
 ```
 で設定ファイルを開く。Macは、
 
-```
+```sh
 code ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
 
 以下のように書き換えて設定。
 
-```
+```json
 {
   "mcpServers": {
       "get-subjects": {
@@ -49,7 +49,7 @@ code ~/Library/Application\ Support/Claude/claude_desktop_config.json
 
 Macでは、
 
-```
+```json
 {
   "mcpServers": {
       "get-subjects": {
@@ -102,18 +102,18 @@ mcpで設定を検索して以下をsetting.jsonに設定。パスは適宜変�
 
 詳しくは、[TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)のClientの実装を参照。
 
-```
+```sh
 node build/index.js
 ```
 でサーバーを起動。
 
-```
+```sh
 node .\build\client.js
 ```
 でクライアントを起動して実行。
 
 クライアントは検証したいコードに合わせて書き換え、その後、
-```
+```sh
 npx tsc
 ```
 でビルドして再度クライアントを実行する。
