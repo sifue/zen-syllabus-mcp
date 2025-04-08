@@ -54,6 +54,7 @@ async function fetchAllPages(options) {
     const mergedData = {
         totalCount,
         pageSize,
+        page: 0, // 全ページのデータを結合した結果なので、page=0 とする
         totalPages,
         relatedTags,
         subjects: allSubjects,
@@ -75,6 +76,38 @@ async function fetchAllPages(options) {
 //   console.log('=== With Query Params ===');
 //   console.log(JSON.stringify(mergedDataWithQuery, null, 2));
 // })();
+/**
+ * 簡易的な科目情報をテキスト形式に変換する関数
+ */
+function formatSimplifiedSubjectToText(subject) {
+    // 科目の基本情報
+    let text = `# 科目: ${subject.name}\n`;
+    text += `開講年度: ${subject.openingYear}年\n\n`;
+    // 科目情報
+    text += `## 科目情報\n`;
+    text += `- 想定年次: ${subject.metadata.enrollmentGrade}\n`;
+    text += `- 授業形態: ${subject.metadata.teachingMethod}\n`;
+    text += `- 必修/選択: ${subject.metadata.subjectRequirement}\n`;
+    text += `- 単位数: ${subject.metadata.credit}\n`;
+    if (subject.metadata.quarters && subject.metadata.quarters.length > 0) {
+        text += `- 開講時期: ${subject.metadata.quarters.join(', ')}\n`;
+    }
+    return text;
+}
+/**
+ * 複数の簡易的な科目情報をテキスト形式に変換する関数
+ */
+function formatSimplifiedSubjectsToText(subjects) {
+    let text = `検索結果: ${subjects.length}件の科目が見つかりました\n\n`;
+    subjects.forEach((subject, index) => {
+        text += formatSimplifiedSubjectToText(subject);
+        // 最後の科目でなければ区切り線を追加
+        if (index < subjects.length - 1) {
+            text += `\n${'='.repeat(30)}\n\n`;
+        }
+    });
+    return text;
+}
 // Get List of All Subjects tool
 server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, openingYear, enrollmentGrade, teachingMethod, subjectRequirement, quarters).", {}, async () => {
     try {
@@ -94,11 +127,13 @@ server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all cours
                 quarters: subject.metadata.quarters
             }
         }));
+        // テキスト形式に変換
+        const formattedText = formatSimplifiedSubjectsToText(simplifiedSubjects);
         return {
             content: [
                 {
                     type: "text",
-                    text: JSON.stringify(simplifiedSubjects, null, 2),
+                    text: formattedText,
                 },
             ],
         };
@@ -114,6 +149,59 @@ server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all cours
         };
     }
 });
+/**
+ * 科目情報をLLMが解釈しやすいテキスト形式に変換する関数
+ */
+function formatSubjectToText(subject) {
+    // 科目の基本情報
+    let text = `# 科目: ${subject.name} (${subject.code})\n`;
+    text += `開講年度: ${subject.openingYear}年\n`;
+    text += `説明: ${subject.description}\n\n`;
+    // 教員情報
+    if (subject.faculty && subject.faculty.length > 0) {
+        text += `## 教員情報\n`;
+        subject.faculty.forEach(faculty => {
+            text += `- ${faculty.name} (${faculty.title})\n`;
+        });
+        text += `\n`;
+    }
+    // 科目情報
+    text += `## 科目情報\n`;
+    text += `- 想定年次: ${subject.metadata.enrollmentGrade}\n`;
+    text += `- 授業形態: ${subject.metadata.teachingMethod}\n`;
+    text += `- 必修/選択: ${subject.metadata.subjectRequirement}\n`;
+    text += `- 単位数: ${subject.metadata.credit}\n`;
+    if (subject.metadata.quarters && subject.metadata.quarters.length > 0) {
+        text += `- 開講時期: ${subject.metadata.quarters.join(', ')}\n`;
+    }
+    text += `\n`;
+    // 授業の目的
+    if (subject.metadata.objective) {
+        text += `## 授業の目的\n${subject.metadata.objective}\n\n`;
+    }
+    // 授業計画
+    if (subject.metadata.coursePlans && subject.metadata.coursePlans.length > 0) {
+        text += `## 授業計画\n`;
+        subject.metadata.coursePlans.forEach((plan, index) => {
+            text += `${index + 1}. ${plan.title}: ${plan.description}\n`;
+        });
+    }
+    return text;
+}
+/**
+ * 複数の科目情報をテキスト形式に変換する関数
+ */
+function formatSubjectsToText(apiResponse) {
+    let text = `検索結果: ${apiResponse.totalCount}件の科目が見つかりました\n\n`;
+    apiResponse.subjects.forEach((subject, index) => {
+        text += formatSubjectToText(subject);
+        // 最後の科目でなければ区切り線を追加
+        if (index < apiResponse.subjects.length - 1) {
+            text += `\n${'='.repeat(50)}\n\n`;
+        }
+    });
+    return text;
+}
 // Get Subjects with details tools
 server.tool("get-subjects-with-detail", "Retrieve detailed course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.", {
     enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)"),
@@ -127,12 +215,53 @@ server.tool("get-subjects-with-detail", "Retrieve detailed course information fr
         if (freeword) {
             options.freeword = freeword;
         }
-        const subjects = await fetchAllPages(options);
+        const apiResponse = await fetchAllPages(options);
+        // 必要なフィールドのみを抽出
+        const filteredSubjects = apiResponse.subjects.map(subject => ({
+            code: subject.code,
+            name: subject.name,
+            description: subject.description,
+            thumbnailUrl: subject.thumbnailUrl,
+            openingYear: subject.openingYear,
+            faculty: subject.faculty ? subject.faculty.map(f => ({
+                id: f.id,
+                name: f.name,
+                reading: f.reading,
+                isForeign: f.isForeign,
+                title: f.title,
+                expertise: f.expertise,
+                avatarUrl: f.avatarUrl
+            })) : [],
+            metadata: {
+                enrollmentGrade: subject.metadata.enrollmentGrade,
+                teachingMethod: subject.metadata.teachingMethod,
+                subjectRequirement: subject.metadata.subjectRequirement,
+                credit: subject.metadata.credit,
+                quarters: subject.metadata.quarters,
+                objective: subject.metadata.objective,
+                coursePlans: subject.metadata.coursePlans ? subject.metadata.coursePlans.map(plan => ({
+                    title: plan.title,
+                    description: plan.description,
+                    sections: plan.sections
+                })) : []
+            }
+        }));
+        // フィルタリングした結果を新しいレスポンスオブジェクトに設定
+        const filteredResponse = {
+            totalCount: apiResponse.totalCount,
+            pageSize: apiResponse.pageSize,
+            page: apiResponse.page,
+            totalPages: apiResponse.totalPages,
+            relatedTags: apiResponse.relatedTags,
+            subjects: filteredSubjects
+        };
+        // テキスト形式に変換
+        const formattedText = formatSubjectsToText(filteredResponse);
         return {
             content: [
                 {
                     type: "text",
-                    text: JSON.stringify(subjects, null, 2),
+                    text: formattedText,
                 },
             ],
         };
