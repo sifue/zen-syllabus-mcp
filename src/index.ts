@@ -150,22 +150,8 @@ async function fetchAllPages(options?: FetchOptions) {
  * 簡易的な科目情報をテキスト形式に変換する関数
  */
 function formatSimplifiedSubjectToText(subject: any): string {
-  // 科目の基本情報
-  let text = `# 科目: ${subject.name}\n`;
-  text += `開講年度: ${subject.openingYear}年\n\n`;
-
-  // 科目情報
-  text += `## 科目情報\n`;
-  text += `- 想定年次: ${subject.metadata.enrollmentGrade}\n`;
-  text += `- 授業形態: ${subject.metadata.teachingMethod}\n`;
-  text += `- 必修/選択: ${subject.metadata.subjectRequirement}\n`;
-  text += `- 単位数: ${subject.metadata.credit}\n`;
-  
-  if (subject.metadata.quarters && subject.metadata.quarters.length > 0) {
-    text += `- 開講時期: ${subject.metadata.quarters.join(', ')}\n`;
-  }
-
-  return text;
+  // 科目名と想定年次のみを含むシンプルなテキスト
+  return `${subject.name} (${subject.metadata.enrollmentGrade})`;
 }
 
 /**
@@ -174,14 +160,11 @@ function formatSimplifiedSubjectToText(subject: any): string {
 function formatSimplifiedSubjectsToText(subjects: any[]): string {
   let text = `検索結果: ${subjects.length}件の科目が見つかりました\n\n`;
   
-  subjects.forEach((subject, index) => {
-    text += formatSimplifiedSubjectToText(subject);
-    
-    // 最後の科目でなければ区切り線を追加
-    if (index < subjects.length - 1) {
-      text += `\n${'='.repeat(30)}\n\n`;
-    }
-  });
+  // 科目名と想定年次のリスト
+  const subjectList = subjects.map(subject => formatSimplifiedSubjectToText(subject));
+  
+  // 1行に1科目ずつ表示
+  text += subjectList.join('\n');
   
   return text;
 }
@@ -189,7 +172,7 @@ function formatSimplifiedSubjectsToText(subjects: any[]): string {
 // Get List of All Subjects tool
 server.tool(
   "get-list-of-all-subjects",
-  "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, openingYear, enrollmentGrade, teachingMethod, subjectRequirement, quarters).",
+  "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, enrollmentGrade).",
   {},
 
   async () => {
