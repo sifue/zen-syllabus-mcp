@@ -25,10 +25,10 @@ console.log("Result from get-list-of-all-subjects:", result1);
 
 // Call get-subjects tool
 const result2 = await client.callTool({
-  name: "get-subjects-with-detail",
+  name: "get-a-subject-with-detail",
   arguments: {
     enrollment_grade: 1,
-    freeword: "ITリテラシー"
+    freeword: "IT"
   }
 });
 

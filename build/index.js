@@ -194,7 +194,7 @@ function formatSubjectsWithFirstDetailToText(apiResponse) {
     // 他の科目の詳細を見るには再度問い合わせるように促すメッセージ
     if (apiResponse.subjects.length > 1) {
         text += `\n${'='.repeat(50)}\n\n`;
-        text += `※ 他の科目の詳細を見るには、科目名または科目コードを指定して再度問い合わせてください。\n`;
+        text += `※ 他の科目の詳細を見るには、科目名を指定して再度問い合わせてください。\n`;
     }
     return text;
 }
@@ -212,8 +212,8 @@ function formatSubjectsToText(apiResponse) {
     });
     return text;
 }
-// Get Subjects with details tools
-server.tool("get-subjects-with-detail", "Retrieve detailed course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.", {
+// Get A Subject with details tools
+server.tool("get-a-subject-with-detail", "Retrieve detailed a course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.", {
     enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)"),
     freeword: z.string().describe("the freeword search parameter (e.g. 'ITリテラシー')"),
 }, async ({ enrollment_grade, freeword }) => {

@@ -316,10 +316,10 @@ function formatSubjectsToText(apiResponse: ApiResponse): string {
 
 // Get A Subject with details tools
 server.tool(
-  "get-subject-with-detail",
-  "Retrieve detailed a course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.",
+  "get-a-subject-with-detail",
+  "Retrieve detailed a course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade (optional)) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.",
   {
-    enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)"),
+    enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)").optional(),
     freeword: z.string().describe("the freeword search parameter (e.g. 'ITリテラシー')"),
   },
 
