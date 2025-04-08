@@ -95,7 +95,7 @@ function formatSimplifiedSubjectsToText(subjects) {
     return text;
 }
 // Get List of All Subjects tool
-server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, openingYear, enrollmentGrade, teachingMethod, subjectRequirement, quarters).", {}, async () => {
+server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, enrollmentGrade).", {}, async () => {
     try {
         const result = await fetchAllPages();
         // Extract only the required properties from each subject
@@ -175,7 +175,31 @@ function formatSubjectToText(subject) {
     return text;
 }
 /**
- * 複数の科目情報をテキスト形式に変換する関数
+ * 科目名の一覧と最初の科目の詳細を表示する関数
+ */
+function formatSubjectsWithFirstDetailToText(apiResponse) {
+    if (apiResponse.subjects.length === 0) {
+        return `検索結果: 0件の科目が見つかりました\n\n`;
+    }
+    let text = `検索結果: ${apiResponse.totalCount}件の科目が見つかりました\n\n`;
+    // 科目名の一覧を表示
+    text += `## 科目一覧\n`;
+    apiResponse.subjects.forEach((subject, index) => {
+        text += `${index + 1}. ${subject.name} (${subject.code})\n`;
+    });
+    text += `\n${'='.repeat(50)}\n\n`;
+    // 最初の科目の詳細を表示
+    text += `## 最初の科目の詳細\n\n`;
+    text += formatSubjectToText(apiResponse.subjects[0]);
+    // 他の科目の詳細を見るには再度問い合わせるように促すメッセージ
+    if (apiResponse.subjects.length > 1) {
+        text += `\n${'='.repeat(50)}\n\n`;
+        text += `※ 他の科目の詳細を見るには、科目名または科目コードを指定して再度問い合わせてください。\n`;
+    }
+    return text;
+}
+/**
+ * 複数の科目情報をテキスト形式に変換する関数（すべての科目の詳細を表示）
  */
 function formatSubjectsToText(apiResponse) {
     let text = `検索結果: ${apiResponse.totalCount}件の科目が見つかりました\n\n`;
@@ -241,8 +265,8 @@ server.tool("get-subjects-with-detail", "Retrieve detailed course information fr
             relatedTags: apiResponse.relatedTags,
             subjects: filteredSubjects
         };
-        // テキスト形式に変換
-        const formattedText = formatSubjectsToText(filteredResponse);
+        // 科目名の一覧と最初の科目の詳細のみを表示するテキスト形式に変換
+        const formattedText = formatSubjectsWithFirstDetailToText(filteredResponse);
         return {
             content: [
                 {

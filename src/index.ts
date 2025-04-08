@@ -266,7 +266,38 @@ function formatSubjectToText(subject: Subject): string {
 }
 
 /**
- * 複数の科目情報をテキスト形式に変換する関数
+ * 科目名の一覧と最初の科目の詳細を表示する関数
+ */
+function formatSubjectsWithFirstDetailToText(apiResponse: ApiResponse): string {
+  if (apiResponse.subjects.length === 0) {
+    return `検索結果: 0件の科目が見つかりました\n\n`;
+  }
+
+  let text = `検索結果: ${apiResponse.totalCount}件の科目が見つかりました\n\n`;
+  
+  // 科目名の一覧を表示
+  text += `## 科目一覧\n`;
+  apiResponse.subjects.forEach((subject, index) => {
+    text += `${index + 1}. ${subject.name} (${subject.code})\n`;
+  });
+  
+  text += `\n${'='.repeat(50)}\n\n`;
+  
+  // 最初の科目の詳細を表示
+  text += `## 最初の科目の詳細\n\n`;
+  text += formatSubjectToText(apiResponse.subjects[0]);
+  
+  // 他の科目の詳細を見るには再度問い合わせるように促すメッセージ
+  if (apiResponse.subjects.length > 1) {
+    text += `\n${'='.repeat(50)}\n\n`;
+    text += `※ 他の科目の詳細を見るには、科目名を指定して再度問い合わせてください。\n`;
+  }
+  
+  return text;
+}
+
+/**
+ * 複数の科目情報をテキスト形式に変換する関数（すべての科目の詳細を表示）
  */
 function formatSubjectsToText(apiResponse: ApiResponse): string {
   let text = `検索結果: ${apiResponse.totalCount}件の科目が見つかりました\n\n`;
@@ -283,10 +314,10 @@ function formatSubjectsToText(apiResponse: ApiResponse): string {
   return text;
 }
 
-// Get Subjects with details tools
+// Get A Subject with details tools
 server.tool(
-  "get-subjects-with-detail",
-  "Retrieve detailed course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.",
+  "get-subject-with-detail",
+  "Retrieve detailed a course information from the ZEN University syllabus. The numeric intended year of enrollment (enrollment_grade) and the freeword parameter (freeword) must be specified. The freeword parameter is intended for searching course names and similar keywords.",
   {
     enrollment_grade: z.number().min(1).max(4).describe(" year of enrollment (e.g. 1, 2, 3, 4)"),
     freeword: z.string().describe("the freeword search parameter (e.g. 'ITリテラシー')"),
@@ -347,8 +378,8 @@ server.tool(
         subjects: filteredSubjects
       };
       
-      // テキスト形式に変換
-      const formattedText = formatSubjectsToText(filteredResponse);
+      // 科目名の一覧と最初の科目の詳細のみを表示するテキスト形式に変換
+      const formattedText = formatSubjectsWithFirstDetailToText(filteredResponse);
       
       return {
         content: [
