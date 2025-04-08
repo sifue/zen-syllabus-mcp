@@ -3,16 +3,22 @@
 [ZEN大学シラバス](https://syllabus.zen.ac.jp/)のコンテンツを利用できるようMCPを実装したもの。
 
 ## 使い方
-
+[Node.js](https://nodejs.org/)をインストールする。
 Node.jsのバージョンは20以上を使用すること。
+
+このリポジトリをクローンするか、ZIPでダウンロードして展開する。
+コンソールで開き、以下のコマンドを実行する。
 
 ```
 npx tsc
 ```
 
-でビルド。Macは実行権限をつける。 `chmod 755 build/index.js`
+でビルド。Macはコンソールで実行権限をつける。 `chmod 755 build/index.js`
 
 ## Claude Desktopでの設定
+
+[Claude Desktop](https://claude.ai/download)をインストールする。
+[VSCode](https://azure.microsoft.com/ja-jp/products/visual-studio-code)のエディタがインストール前提だが、
 
 ```
 code $env:AppData\Claude\claude_desktop_config.json
@@ -23,7 +29,7 @@ code $env:AppData\Claude\claude_desktop_config.json
 code ~/Library/Application\ Support/Claude/claude_desktop_config.json
 ```
 
-以下のように設定。
+以下のように書き換えて設定。
 
 ```
 {
@@ -37,6 +43,9 @@ code ~/Library/Application\ Support/Claude/claude_desktop_config.json
   }
 }
 ```
+
+`build/index.js`のパスは適宜変更すること。
+
 
 Macでは、
 
@@ -53,7 +62,7 @@ Macでは、
 }
 ```
 
-パスはこのコードを展開した場所に合わせて変更すること。
+`build/index.js`のパスは適宜変更すること。
 
 設定後はClaude Desktopを再起動。
 
@@ -63,6 +72,8 @@ Macでは、
 
 ![Claude Desktopのスクショ1](image/claude1.png)
 ![Claude Desktopのスクショ2](image/claude2.png)
+
+このようになる。履修要件を設定すれば細かな履修相談も可能。
 
 ## VSCodeの設定
 【未検証】いずれGitHub Copilot でAIエージェントが利用できるようなると利用できるらしい(現在はプレビュー版のみ)。
@@ -85,9 +96,9 @@ mcpで設定を検索して以下をsetting.jsonに設定。パスは適宜変�
 
 「ZEN大学のシラバスMCPを利用して、フロントエンドエンジニアになるためのオススメの科目をあげてください」
 
-で検証。
+で検証。履修要件を設定すれば細かな履修相談も可能。
 
-## 動作確認
+## サーバー実装時の動作確認
 
 詳しくは、[TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)のClientの実装を参照。
 
