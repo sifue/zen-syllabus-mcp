@@ -1,4 +1,4 @@
-# ZEN大学シラバスMCP実装 
+# ZEN大学シラバスMCPサーバー実装 
 
 [ZEN大学シラバス](https://syllabus.zen.ac.jp/)のコンテンツを利用できるようMCPを実装したもの。
 
