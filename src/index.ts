@@ -59,13 +59,13 @@ function getCategoryName(categoryIds: string[]): string {
 
   const categoryMap: Record<string, string> = {
     "basic": "導入科目",
-    "applied_informatics": "基盤リテラシー科目",
-    "mathematical_sciences": "基盤リテラシー科目",
+    "applied_informatics": "基盤リテラシー科目 (情報)",
+    "mathematical_sciences": "基盤リテラシー科目 (数理)",
     "multilingual_information_understanding": "多言語情報理解科目",
-    "culture_and_thoughts": "世界理解科目",
-    "society_and_networks": "世界理解科目",
-    "economy_and_markets": "世界理解科目",
-    "digital_industr": "世界理解科目",
+    "culture_and_thoughts": "世界理解科目 (文化・思想)",
+    "society_and_networks": "世界理解科目 (社会・ネットワーク)",
+    "economy_and_markets": "世界理解科目 (経済・マーケット)",
+    "digital_industr": "世界理解科目 (デジタル産業)",
     "social_connection": "社会接続科目",
     "graduation_project": "卒業プロジェクト科目",
     "free": "自由科目"
