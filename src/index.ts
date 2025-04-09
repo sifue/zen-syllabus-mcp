@@ -45,7 +45,37 @@ interface Subject {
       description: string;
       sections: any[];
     }>;
+  };
+  subjectCategoryIds: string[];
+}
+
+/**
+ * 科目カテゴリーIDから分類名を取得する関数
+ */
+function getCategoryName(categoryIds: string[]): string {
+  if (!categoryIds || categoryIds.length === 0) {
+    return "未分類";
   }
+
+  const categoryMap: Record<string, string> = {
+    "basic": "導入科目",
+    "applied_informatics": "基盤リテラシー科目",
+    "mathematical_sciences": "基盤リテラシー科目",
+    "multilingual_information_understanding": "多言語情報理解科目",
+    "culture_and_thoughts": "世界理解科目",
+    "society_and_networks": "世界理解科目",
+    "economy_and_markets": "世界理解科目",
+    "digital_industr": "世界理解科目",
+    "social_connection": "社会接続科目",
+    "graduation_project": "卒業プロジェクト科目",
+    "free": "自由科目"
+  };
+
+  // カテゴリーIDに対応する分類名を取得
+  const categoryNames = categoryIds.map(id => categoryMap[id] || "未分類");
+  
+  // 重複を排除
+  return [...new Set(categoryNames)].join(", ");
 }
 
 /**
@@ -150,8 +180,9 @@ async function fetchAllPages(options?: FetchOptions) {
  * 簡易的な科目情報をテキスト形式に変換する関数
  */
 function formatSimplifiedSubjectToText(subject: any): string {
-  // 科目名と想定年次のみを含むシンプルなテキスト
-  return `${subject.name} (${subject.metadata.enrollmentGrade})`;
+  // 科目名、想定年次、分類を含むシンプルなテキスト
+  const categoryName = getCategoryName(subject.subjectCategoryIds || []);
+  return `${subject.name} (${subject.metadata.enrollmentGrade}) - 分類: ${categoryName}`;
 }
 
 /**
@@ -192,7 +223,8 @@ server.tool(
           subjectRequirement: subject.metadata.subjectRequirement,
           credit: subject.metadata.credit,
           quarters: subject.metadata.quarters
-        }
+        },
+        subjectCategoryIds: subject.subjectCategoryIds || []
       }));
 
       // テキスト形式に変換
@@ -247,6 +279,11 @@ function formatSubjectToText(subject: Subject): string {
   if (subject.metadata.quarters && subject.metadata.quarters.length > 0) {
     text += `- 開講時期: ${subject.metadata.quarters.join(', ')}\n`;
   }
+
+  // 分類情報を追加
+  const categoryName = getCategoryName(subject.subjectCategoryIds || []);
+  text += `- 分類: ${categoryName}\n`;
+  
   text += `\n`;
 
   // 授業の目的
@@ -365,7 +402,8 @@ server.tool(
             description: plan.description,
             sections: plan.sections
           })) : []
-        }
+        },
+        subjectCategoryIds: subject.subjectCategoryIds || []
       }));
       
       // フィルタリングした結果を新しいレスポンスオブジェクトに設定
