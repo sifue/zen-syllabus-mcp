@@ -40,6 +40,7 @@ interface Subject {
     credit: string;
     quarters: string[];
     objective: string;
+    specialNotes: string;
     coursePlans: Array<{
       title: string;
       description: string;
@@ -222,7 +223,10 @@ server.tool(
           teachingMethod: subject.metadata.teachingMethod,
           subjectRequirement: subject.metadata.subjectRequirement,
           credit: subject.metadata.credit,
-          quarters: subject.metadata.quarters
+          quarters: subject.metadata.quarters,
+          objective: subject.metadata.objective,
+          specialNotes: subject.metadata.specialNotes,
+          coursePlans: subject.metadata.coursePlans || []
         },
         subjectCategoryIds: subject.subjectCategoryIds || []
       }));
@@ -289,6 +293,11 @@ function formatSubjectToText(subject: Subject): string {
   // 授業の目的
   if (subject.metadata.objective) {
     text += `## 授業の目的\n${subject.metadata.objective}\n\n`;
+  }
+
+  // 特記事項
+  if (subject.metadata.specialNotes) {
+    text += `## 特記事項\n${subject.metadata.specialNotes}\n\n`;
   }
 
   // 授業計画
@@ -397,6 +406,7 @@ server.tool(
           credit: subject.metadata.credit,
           quarters: subject.metadata.quarters,
           objective: subject.metadata.objective,
+          specialNotes: subject.metadata.specialNotes,
           coursePlans: subject.metadata.coursePlans ? subject.metadata.coursePlans.map(plan => ({
             title: plan.title,
             description: plan.description,
