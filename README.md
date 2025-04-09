@@ -63,7 +63,22 @@ Macでは、
 }
 ```
 
-`build/index.js`のパスは適宜変更すること。
+[nvm](https://github.com/nvm-sh/nvm)などのNode.jsのバージョン管理システムを利用している場合以下のようにnodeを指定する。
+
+```json
+{
+    "mcpServers": {
+        "get-subjects": {
+            "command": "/Users/soichiro_yoshimura/.nvm/versions/node/v22.14.0/bin/node",
+            "args": [
+                "/Users/soichiro_yoshimura/workspace/zen-syllabus-mcp/build/index.js"
+            ]
+        }
+    }
+}
+```
+
+このようになる。`build/index.js`のパスは適宜変更すること。
 
 設定後はClaude Desktopを再起動。
 
