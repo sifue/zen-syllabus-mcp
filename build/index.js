@@ -105,9 +105,12 @@ async function fetchAllPages(options) {
  * 簡易的な科目情報をテキスト形式に変換する関数
  */
 function formatSimplifiedSubjectToText(subject) {
-    // 科目名、想定年次、分類を含むシンプルなテキスト
+    // 科目名、想定年次、開講時期、分類を含むシンプルなテキスト
     const categoryName = getCategoryName(subject.subjectCategoryIds || []);
-    return `${subject.name} (${subject.metadata.enrollmentGrade}) - 分類: ${categoryName}`;
+    const quarters = subject.metadata.quarters && subject.metadata.quarters.length > 0
+        ? `開講時期: ${subject.metadata.quarters.join(', ')}`
+        : '開講時期: 未定';
+    return `${subject.name} (${subject.metadata.enrollmentGrade}) - ${quarters} - 分類: ${categoryName}`;
 }
 /**
  * 複数の簡易的な科目情報をテキスト形式に変換する関数
@@ -121,7 +124,7 @@ function formatSimplifiedSubjectsToText(subjects) {
     return text;
 }
 // Get List of All Subjects tool
-server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, enrollmentGrade).", {}, async () => {
+server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all courses from the ZEN University syllabus, containing only the essential properties (name, enrollmentGrade, quarters).", {}, async () => {
     try {
         const result = await fetchAllPages();
         // Extract only the required properties from each subject
