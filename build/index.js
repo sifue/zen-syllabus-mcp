@@ -141,6 +141,7 @@ server.tool("get-list-of-all-subjects", "Retrieve a simplified list of all cours
                 enrollmentGrade: subject.metadata.enrollmentGrade,
                 teachingMethod: subject.metadata.teachingMethod,
                 subjectRequirement: subject.metadata.subjectRequirement,
+                evaluationSystem: subject.metadata.evaluationSystem,
                 credit: subject.metadata.credit,
                 quarters: subject.metadata.quarters,
                 objective: subject.metadata.objective,
@@ -192,6 +193,7 @@ function formatSubjectToText(subject) {
     text += `- 想定年次: ${subject.metadata.enrollmentGrade}\n`;
     text += `- 授業形態: ${subject.metadata.teachingMethod}\n`;
     text += `- 必修/選択: ${subject.metadata.subjectRequirement}\n`;
+    text += `- 評価方法: ${subject.metadata.evaluationSystem || '未定'}\n`;
     text += `- 単位数: ${subject.metadata.credit}\n`;
     if (subject.metadata.quarters && subject.metadata.quarters.length > 0) {
         text += `- 開講時期: ${subject.metadata.quarters.join(', ')}\n`;
@@ -289,6 +291,7 @@ server.tool("get-a-subject-with-detail", "Retrieve detailed a course information
                 enrollmentGrade: subject.metadata.enrollmentGrade,
                 teachingMethod: subject.metadata.teachingMethod,
                 subjectRequirement: subject.metadata.subjectRequirement,
+                evaluationSystem: subject.metadata.evaluationSystem,
                 credit: subject.metadata.credit,
                 quarters: subject.metadata.quarters,
                 objective: subject.metadata.objective,

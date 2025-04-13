@@ -37,6 +37,7 @@ interface Subject {
     enrollmentGrade: string;
     teachingMethod: string;
     subjectRequirement: string;
+    evaluationSystem: string;
     credit: string;
     quarters: string[];
     objective: string;
@@ -228,6 +229,7 @@ server.tool(
           enrollmentGrade: subject.metadata.enrollmentGrade,
           teachingMethod: subject.metadata.teachingMethod,
           subjectRequirement: subject.metadata.subjectRequirement,
+          evaluationSystem: subject.metadata.evaluationSystem,
           credit: subject.metadata.credit,
           quarters: subject.metadata.quarters,
           objective: subject.metadata.objective,
@@ -284,6 +286,7 @@ function formatSubjectToText(subject: Subject): string {
   text += `- 想定年次: ${subject.metadata.enrollmentGrade}\n`;
   text += `- 授業形態: ${subject.metadata.teachingMethod}\n`;
   text += `- 必修/選択: ${subject.metadata.subjectRequirement}\n`;
+  text += `- 評価方法: ${subject.metadata.evaluationSystem || '未定'}\n`;
   text += `- 単位数: ${subject.metadata.credit}\n`;
   
   if (subject.metadata.quarters && subject.metadata.quarters.length > 0) {
@@ -409,6 +412,7 @@ server.tool(
           enrollmentGrade: subject.metadata.enrollmentGrade,
           teachingMethod: subject.metadata.teachingMethod,
           subjectRequirement: subject.metadata.subjectRequirement,
+          evaluationSystem: subject.metadata.evaluationSystem,
           credit: subject.metadata.credit,
           quarters: subject.metadata.quarters,
           objective: subject.metadata.objective,
