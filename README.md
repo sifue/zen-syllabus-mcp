@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/sifue-zen-syllabus-mcp-badge.png)](https://mseep.ai/app/sifue-zen-syllabus-mcp)
+
 # ZEN大学シラバスMCPサーバー実装 
 
 [ZEN大学シラバス](https://syllabus.zen.ac.jp/)のコンテンツを利用できるようMCPを実装したもの。
